@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:firebase_storage/firebase_storage.dart';
-
+///
 class CloudStorage {
   final firebaseStorage = FirebaseStorage.instance;
 
