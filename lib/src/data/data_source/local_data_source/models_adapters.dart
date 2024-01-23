@@ -2,7 +2,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../models/load.dart';
 import '../../models/user.dart';
-
+///
 class UserAdapter extends TypeAdapter<MyUser> {
   @override
   int get typeId => 0;
