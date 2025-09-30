@@ -9,6 +9,10 @@ class RegisterState extends Equatable {
     this.authError,
     this.emailError,
     this.passwordError,
+    this.usernameError,
+    this.phoneError,
+    this.birthDateError,
+    this.userTypeError,
     this.passwordStrength = PasswordStrength.empty,
   });
 
@@ -17,11 +21,25 @@ class RegisterState extends Equatable {
   final AuthError? authError;
   final AuthError? emailError;
   final AuthError? passwordError;
+  final AuthError? usernameError;
+  final AuthError? phoneError;
+  final AuthError? birthDateError;
+  final AuthError? userTypeError;
   final PasswordStrength passwordStrength;
 
   bool get hasEmailError => emailError != null;
   bool get hasPasswordError => passwordError != null;
-  bool get hasValidationErrors => hasEmailError || hasPasswordError;
+  bool get hasUsernameError => usernameError != null;
+  bool get hasPhoneError => phoneError != null;
+  bool get hasBirthDateError => birthDateError != null;
+  bool get hasUserTypeError => userTypeError != null;
+  bool get hasValidationErrors => 
+      hasEmailError || 
+      hasPasswordError || 
+      hasUsernameError || 
+      hasPhoneError || 
+      hasBirthDateError || 
+      hasUserTypeError;
 
   RegisterState copyWith({
     Status? status,
@@ -29,6 +47,10 @@ class RegisterState extends Equatable {
     AuthError? authError,
     AuthError? emailError,
     AuthError? passwordError,
+    AuthError? usernameError,
+    AuthError? phoneError,
+    AuthError? birthDateError,
+    AuthError? userTypeError,
     PasswordStrength? passwordStrength,
     bool clearErrors = false,
   }) {
@@ -38,10 +60,25 @@ class RegisterState extends Equatable {
       authError: clearErrors ? null : (authError ?? this.authError),
       emailError: clearErrors ? null : (emailError ?? this.emailError),
       passwordError: clearErrors ? null : (passwordError ?? this.passwordError),
+      usernameError: clearErrors ? null : (usernameError ?? this.usernameError),
+      phoneError: clearErrors ? null : (phoneError ?? this.phoneError),
+      birthDateError: clearErrors ? null : (birthDateError ?? this.birthDateError),
+      userTypeError: clearErrors ? null : (userTypeError ?? this.userTypeError),
       passwordStrength: passwordStrength ?? this.passwordStrength,
     );
   }
 
   @override
-  List<Object?> get props => [status, errorMessage, authError, emailError, passwordError, passwordStrength];
+  List<Object?> get props => [
+    status, 
+    errorMessage, 
+    authError, 
+    emailError, 
+    passwordError, 
+    usernameError, 
+    phoneError, 
+    birthDateError, 
+    userTypeError, 
+    passwordStrength
+  ];
 }

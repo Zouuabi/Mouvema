@@ -36,7 +36,7 @@ class ResetAccountScreen extends StatelessWidget {
                       title: 'Oops!');
                 } else if (state.status == Status.emailSent) {
                   Navigator.pushReplacementNamed(
-                      context, Routes.loginWithPassword);
+                      context, Routes.login);
                   showAlert(
                       message: 'We sent you an email Check inbox',
                       context: context,

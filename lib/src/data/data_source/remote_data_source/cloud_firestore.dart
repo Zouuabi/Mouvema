@@ -75,6 +75,7 @@ class CloudFiresore {
       required String email,
       required String birdhdate,
       required String tel,
+      required String userType,
       required List<String> favoriteLoads}) async {
     Map<String, dynamic> user = {
       'uid': uid,
@@ -83,6 +84,7 @@ class CloudFiresore {
       'tel': tel,
       'username': username,
       'birthdate': birdhdate,
+      'userType': userType,
       'favoriteLoads': []
     };
     await _firestore.collection(collectionrRef).doc(uid).set(user);

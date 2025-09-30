@@ -16,6 +16,7 @@ abstract class Repository {
       {required String username,
       required String birthdate,
       required String tel,
+      required String userType,
       required Uint8List? image});
   Future<Either<Failure, void>> logOut();
   Future<Either<Failure, bool>> isFirstTime();

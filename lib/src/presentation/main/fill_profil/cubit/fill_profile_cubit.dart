@@ -50,6 +50,7 @@ class FillProfilCubit extends Cubit<FillProfilState> {
           username: usernameController.text,
           birthdate: birth,
           tel: telController.text,
+          userType: 'shipper', // Default value - this should be updated to get from user selection
           image: photo);
       result.fold(
         (failure) {

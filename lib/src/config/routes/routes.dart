@@ -4,7 +4,7 @@ import '../../data/models/load.dart';
 import '../../injector.dart';
 import '../../presentation/forgot_password/pages/forgot_password_screen.dart';
 import '../../presentation/login/pages/login_screen.dart';
-import '../../presentation/login/pages/login_with_password.dart';
+
 import '../../presentation/main/fill_profil/pages/fill_profile_screen.dart';
 import '../../presentation/main/load_details/load_details_screen.dart';
 import '../../presentation/main/main_screen.dart';
@@ -15,7 +15,7 @@ import '../../presentation/register/pages/register_screen.dart';
 class Routes {
   static const String splash = "/";
   static const String login = "/login";
-  static const String loginWithPassword = "/loginWithPassword";
+
   static const String register = "/register";
   static const String forgotPassword = "/forgortPassword";
 
@@ -36,11 +36,7 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (BuildContext ctx) {
           return const LoginScreen();
         });
-      // login With password
-      case Routes.loginWithPassword:
-        return MaterialPageRoute(builder: (BuildContext ctx) {
-          return const LoginWithPassword();
-        });
+
       // main screen
       case Routes.main:
         homeInstances();

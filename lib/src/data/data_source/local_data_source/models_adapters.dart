@@ -16,6 +16,7 @@ class UserAdapter extends TypeAdapter<MyUser> {
     final String tel = reader.read();
     final String image = reader.read();
     final List<dynamic> favoriteLoads = reader.read();
+    final String userTypeString = reader.read();
 
     return MyUser(
         uid: uid,
@@ -24,7 +25,8 @@ class UserAdapter extends TypeAdapter<MyUser> {
         birdhdate: birdhdate,
         tel: tel,
         favoriteLoads: favoriteLoads,
-        image: image);
+        image: image,
+        userType: UserType.fromString(userTypeString));
   }
 
   @override
@@ -36,6 +38,7 @@ class UserAdapter extends TypeAdapter<MyUser> {
     writer.write(obj.tel);
     writer.write(obj.image);
     writer.write(obj.favoriteLoads);
+    writer.write(obj.userType.name);
   }
 }
 

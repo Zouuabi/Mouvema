@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mouvema/src/config/routes/routes.dart';
-import 'package:mouvema/src/core/utils/string_manager.dart';
 
 import '../../../core/errors/auth_error.dart';
 import '../../../data/repository/repository_impl.dart';
+import '../../../data/models/user.dart';
 import '../../../injector.dart';
-import '../../shared/enhanced_text_field.dart';
 import '../../shared/loading_button.dart';
-import '../../shared/password_strength_indicator.dart';
+import '../../shared/enhanced_text_field.dart';
 import '../cubit/register_cubit.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -18,42 +17,20 @@ class RegisterScreen extends StatefulWidget {
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
+class _RegisterScreenState extends State<RegisterScreen> {
+  late PageController _pageController;
+  int _currentStep = 0;
+  final int _totalSteps = 5;
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
-      vsync: this,
-    );
-
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: const Interval(0.0, 0.7, curve: Curves.easeOut),
-    ));
-
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: const Interval(0.2, 1.0, curve: Curves.easeOutCubic),
-    ));
-
-    _animationController.forward();
+    _pageController = PageController();
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -62,227 +39,550 @@ class _RegisterScreenState extends State<RegisterScreen>
     return BlocProvider<RegisterCubit>(
       create: (context) => RegisterCubit(instance<RepositoryImpl>()),
       child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
+          backgroundColor: Colors.white,
           elevation: 0,
-          backgroundColor: Colors.transparent,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_rounded),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: const Text(
-            'Create Account',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
+          toolbarHeight: 0, // Hide the default app bar
         ),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: BlocConsumer<RegisterCubit, RegisterState>(
-              listener: (context, state) {
-                if (state.status == Status.registerSuccess) {
-                  _showSuccessDialog(context);
-                } else if (state.status == Status.registerFailed && state.authError != null) {
-                  _showErrorDialog(context, state.authError!);
-                }
-              },
-              builder: (context, state) {
-                return FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: SlideTransition(
-                    position: _slideAnimation,
-                    child: _registerContent(context, state),
+        body: BlocConsumer<RegisterCubit, RegisterState>(
+          listener: (context, state) {
+            if (state.status == Status.registerSuccess) {
+              _showSuccessDialog(context);
+            } else if (state.status == Status.registerFailed &&
+                state.authError != null) {
+              _showErrorDialog(context, state.authError!);
+            }
+          },
+          builder: (context, state) {
+            final cubit = BlocProvider.of<RegisterCubit>(context);
+            return Column(
+              children: [
+                // App bar with next button
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back_ios,
+                            color: Colors.black),
+                        onPressed: () => _handleBackPress(context),
+                      ),
+                      if (_currentStep < _totalSteps - 1)
+                        TextButton(
+                          onPressed: _canProceedToNextStep(cubit, state)
+                              ? () => _nextStep(cubit)
+                              : null,
+                          child: Text(
+                            'Next',
+                            style: TextStyle(
+                              color: _canProceedToNextStep(cubit, state)
+                                  ? Colors.teal
+                                  : Colors.grey,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
-                );
-              },
-            ),
-          ),
+                ),
+
+                // Progress indicator
+                Container(
+                  height: 4,
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  child: LinearProgressIndicator(
+                    value: (_currentStep + 1) / _totalSteps,
+                    backgroundColor: Colors.grey.shade200,
+                    valueColor:
+                        const AlwaysStoppedAnimation<Color>(Colors.teal),
+                  ),
+                ),
+
+                // Content
+                Expanded(
+                  child: PageView(
+                    controller: _pageController,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      _buildUserTypeStep(context, state),
+                      _buildNameStep(context, state),
+                      _buildPhoneStep(context, state),
+                      _buildBirthdayStep(context, state),
+                      _buildPasswordStep(context, state),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget _registerContent(BuildContext context, RegisterState state) {
+  Widget _buildPhoneStep(BuildContext context, RegisterState state) {
     final cubit = BlocProvider.of<RegisterCubit>(context);
-    final theme = Theme.of(context);
 
-    return Column(
-      children: [
-        // Header section with enhanced styling
-        Expanded(
-          flex: 2,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 40),
+          const Text(
+            'My number',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'You may get SMS verification from us for security and login purposes.',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(height: 40),
+
+          // Phone input
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                const Text(
+                  '🇺🇸 +1',
+                  style: TextStyle(fontSize: 16),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    controller: cubit.phoneController,
+                    keyboardType: TextInputType.phone,
+                    style: const TextStyle(fontSize: 16),
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      hintText: 'Phone number',
+                    ),
+                    onChanged: (_) => setState(() {}),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          if (state.phoneError != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              state.phoneError!.userMessage,
+              style: const TextStyle(color: Colors.red, fontSize: 12),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNameStep(BuildContext context, RegisterState state) {
+    final cubit = BlocProvider.of<RegisterCubit>(context);
+
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 40),
+          const Text(
+            'My name',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 40),
+
+          // Username input
+          EnhancedTextField(
+            controller: cubit.usernameController,
+            hintText: 'Enter your username',
+            labelText: 'Username',
+            prefixIcon: Icons.person_outline,
+            error: state.usernameError,
+            onChanged: () {
+              cubit.clearFieldError('username');
+              setState(() {});
+            },
+            onClearError: () => cubit.clearFieldError('username'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBirthdayStep(BuildContext context, RegisterState state) {
+    final cubit = BlocProvider.of<RegisterCubit>(context);
+
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 40),
+          const Text(
+            'My birthday',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Your age will be public',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(height: 40),
+
+          // Date input
+          GestureDetector(
+            onTap: () => _selectDate(context, cubit),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      Icons.person_add_rounded,
-                      color: theme.colorScheme.primary,
-                      size: 28,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Create your\nAccount',
-                          style: theme.textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.onSurface,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Join us today! Please fill in your details.',
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
+                    child: Text(
+                      cubit.selectedBirthDate != null
+                          ? _formatDate(cubit.selectedBirthDate!)
+                          : 'DD / MM / YYYY',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: cubit.selectedBirthDate != null
+                            ? Colors.black
+                            : Colors.grey,
+                      ),
                     ),
                   ),
+                  const Icon(Icons.calendar_today, color: Colors.grey),
                 ],
               ),
-            ],
-          ),
-        ),
-
-        // Form section with enhanced design
-        Expanded(
-          flex: 5,
-          child: Card(
-            elevation: 12,
-            shadowColor: theme.colorScheme.shadow.withValues(alpha: 0.2),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    theme.colorScheme.surface,
-                    theme.colorScheme.surface.withValues(alpha: 0.8),
-                  ],
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(28),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // Form header
-                      Text(
-                        'Sign Up',
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Create your account to get started',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-
-                      // Email field
-                      EnhancedTextField(
-                        controller: cubit.emailController,
-                        hintText: 'user@example.com',
-                        labelText: 'Email Address',
-                        prefixIcon: Icons.email_outlined,
-                        keyboardType: TextInputType.emailAddress,
-                        error: state.emailError,
-                        onChanged: () => cubit.validateEmailField(),
-                        onClearError: () => cubit.clearFieldError('email'),
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Password field
-                      EnhancedTextField(
-                        controller: cubit.passwordController,
-                        hintText: StringManager.enterYourPassword,
-                        labelText: 'Password',
-                        prefixIcon: Icons.lock_outline,
-                        isPassword: true,
-                        error: state.passwordError,
-                        onChanged: () => cubit.validatePasswordField(),
-                        onClearError: () => cubit.clearFieldError('password'),
-                      ),
-
-                      // Password strength indicator with enhanced styling
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        child: PasswordStrengthIndicator(
-                          strength: state.passwordStrength,
-                          password: cubit.passwordController.text,
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-
-                      // Register button with enhanced styling
-                      LoadingButton(
-                        onPressed: () => cubit.register(),
-                        text: StringManager.signUp,
-                        isLoading: state.status == Status.loading,
-                        height: 56,
-                        icon: const Icon(Icons.person_add_rounded),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
             ),
           ),
-        ),
 
-        // Footer section
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+          if (state.birthDateError != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              state.birthDateError!.userMessage,
+              style: const TextStyle(color: Colors.red, fontSize: 12),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUserTypeStep(BuildContext context, RegisterState state) {
+    final cubit = BlocProvider.of<RegisterCubit>(context);
+
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 40),
+          const Text(
+            'I am a',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 40),
+
+          // User type options
+          _buildUserTypeOption(
+            'Shipper',
+            'I need to ship goods',
+            UserType.shipper,
+            cubit.selectedUserType == UserType.shipper,
+            () => cubit.updateUserType(UserType.shipper),
+            cubit,
+          ),
+          const SizedBox(height: 16),
+          _buildUserTypeOption(
+            'Driver',
+            'I transport goods',
+            UserType.driver,
+            cubit.selectedUserType == UserType.driver,
+            () => cubit.updateUserType(UserType.driver),
+            cubit,
+          ),
+
+          if (state.userTypeError != null) ...[
+            const SizedBox(height: 16),
+            Text(
+              state.userTypeError!.userMessage,
+              style: const TextStyle(color: Colors.red, fontSize: 12),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUserTypeOption(
+    String title,
+    String subtitle,
+    UserType type,
+    bool isSelected,
+    VoidCallback onTap,
+    RegisterCubit cubit,
+  ) {
+    return GestureDetector(
+      onTap: () {
+        onTap();
+        // Trigger validation for user type
+        cubit.clearFieldError('userType');
+        setState(() {});
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1) : Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isSelected ? Theme.of(context).colorScheme.primary : Colors.transparent,
+            width: 2,
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    StringManager.alreadyHaveAccount,
-                    style: theme.textTheme.bodyMedium,
+                    title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected ? Colors.teal : Colors.black,
+                    ),
                   ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      StringManager.singIn,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: theme.colorScheme.primary,
-                      ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
                     ),
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+            if (isSelected)
+              const Icon(
+                Icons.check_circle,
+                color: Colors.teal,
+              ),
+          ],
         ),
-      ],
+      ),
     );
+  }
+
+  Widget _buildPasswordStep(BuildContext context, RegisterState state) {
+    final cubit = BlocProvider.of<RegisterCubit>(context);
+
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 40),
+          const Text(
+            'Create account',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 40),
+
+          // Email input
+          EnhancedTextField(
+            controller: cubit.emailController,
+            hintText: 'Enter your email',
+            labelText: 'Email',
+            prefixIcon: Icons.email_outlined,
+            keyboardType: TextInputType.emailAddress,
+            error: state.emailError,
+            onChanged: () {
+              cubit.clearFieldError('email');
+              setState(() {});
+            },
+            onClearError: () => cubit.clearFieldError('email'),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Password input
+          EnhancedTextField(
+            controller: cubit.passwordController,
+            hintText: 'Enter your password',
+            labelText: 'Password',
+            prefixIcon: Icons.lock_outline,
+            isPassword: true,
+            error: state.passwordError,
+            onChanged: () {
+              cubit.clearFieldError('password');
+              setState(() {});
+            },
+            onClearError: () => cubit.clearFieldError('password'),
+          ),
+
+          const Spacer(),
+
+          // Register button
+          SizedBox(
+            width: double.infinity,
+            child: LoadingButton(
+              onPressed: _canCreateAccount(cubit, state)
+                  ? () => cubit.register()
+                  : null,
+              text: 'Create Account',
+              isLoading: state.status == Status.loading,
+              height: 50,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool _canProceedToNextStep(RegisterCubit cubit, RegisterState state) {
+    switch (_currentStep) {
+      case 0: // User type step
+        return cubit.selectedUserType != null;
+      case 1: // Name step
+        // Validate username and check if it's valid
+        if (cubit.usernameController.text.isEmpty) return false;
+        final usernameError = cubit.validateUsernameSync(cubit.usernameController.text);
+        return usernameError == null;
+      case 2: // Phone step
+        return cubit.phoneController.text.isNotEmpty;
+      case 3: // Birthday step
+        return cubit.selectedBirthDate != null;
+      case 4: // Password step
+        if (cubit.emailController.text.isEmpty || cubit.passwordController.text.isEmpty) {
+          return false;
+        }
+        final emailError = cubit.validateEmailSync(cubit.emailController.text);
+        final passwordError = cubit.validatePasswordSync(cubit.passwordController.text);
+        return emailError == null && passwordError == null;
+      default:
+        return false;
+    }
+  }
+
+  bool _canCreateAccount(RegisterCubit cubit, RegisterState state) {
+    return cubit.phoneController.text.isNotEmpty &&
+        cubit.usernameController.text.isNotEmpty &&
+        cubit.selectedBirthDate != null &&
+        cubit.selectedUserType != null &&
+        cubit.emailController.text.isNotEmpty &&
+        cubit.passwordController.text.isNotEmpty &&
+        state.usernameError == null &&
+        state.birthDateError == null &&
+        state.userTypeError == null &&
+        state.emailError == null &&
+        state.passwordError == null;
+  }
+
+  void _nextStep(RegisterCubit cubit) {
+    // Validate current step before proceeding
+    bool canProceed = true;
+    
+    switch (_currentStep) {
+      case 1: // Name step - validate username
+        cubit.validateUsernameField();
+        break;
+      case 4: // Password step - validate email and password
+        cubit.validateEmailField();
+        cubit.validatePasswordField();
+        break;
+    }
+    
+    if (canProceed && _currentStep < _totalSteps - 1) {
+      setState(() {
+        _currentStep++;
+      });
+
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  void _previousStep() {
+    if (_currentStep > 0) {
+      setState(() {
+        _currentStep--;
+      });
+
+      _pageController.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  void _handleBackPress(BuildContext context) {
+    if (_currentStep > 0) {
+      _previousStep();
+    } else {
+      Navigator.pop(context);
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context, RegisterCubit cubit) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now().subtract(const Duration(days: 6570)),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now().subtract(const Duration(days: 6570)),
+    );
+
+    if (picked != null) {
+      cubit.updateBirthDate(picked);
+      cubit.clearFieldError('birthDate');
+      setState(() {});
+    }
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day.toString().padLeft(2, '0')} / ${date.month.toString().padLeft(2, '0')} / ${date.year}';
   }
 
   void _showSuccessDialog(BuildContext context) {
@@ -292,48 +592,17 @@ class _RegisterScreenState extends State<RegisterScreen>
       builder: (context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(12),
           ),
-          title: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.green.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(
-                  Icons.check_circle_rounded,
-                  color: Colors.green,
-                  size: 28,
-                ),
-              ),
-              const SizedBox(width: 12),
-              const Expanded(
-                child: Text(
-                  'Welcome to Mouvema!',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          content: const Text(
-            'Your account has been created successfully! You can now sign in with your credentials and start managing your loads.',
-            style: TextStyle(fontSize: 16),
-          ),
+          title: const Text('Welcome!'),
+          content: const Text('Your account has been created successfully.'),
           actions: [
-            FilledButton.icon(
+            TextButton(
               onPressed: () {
-                Navigator.pushReplacementNamed(context, Routes.loginWithPassword);
+                Navigator.pushReplacementNamed(
+                    context, Routes.login);
               },
-              icon: const Icon(Icons.login_rounded),
-              label: const Text('Sign In Now'),
-              style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              ),
+              child: const Text('Sign In'),
             ),
           ],
         );
@@ -347,116 +616,18 @@ class _RegisterScreenState extends State<RegisterScreen>
       builder: (context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(12),
           ),
-          title: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: error.severity.color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  error.severity.icon,
-                  color: error.severity.color,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 12),
-              const Expanded(
-                child: Text(
-                  'Registration Failed',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ),
-          content: Text(
-            error.userMessage,
-            style: const TextStyle(fontSize: 16),
-          ),
+          title: const Text('Error'),
+          content: Text(error.userMessage),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(
-                error.isRetryable ? 'Try Again' : 'OK',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              child: const Text('OK'),
             ),
           ],
         );
       },
     );
   }
-
-//   Column _getForm(
-//       RegisterCubit mycubit, RegisterState state, BuildContext context) {
-//     return Column(
-//       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//       children: [
-//         MyTextField(
-//           labelText: 'username',
-//           errorMessage: 'username is required',
-//           keyboardType: TextInputType.name,
-//           icon: null,
-//           controller: mycubit.usernameController,
-//           hintText: 'Enter your username',
-//           isError:
-//               state is RegisterError && state.errorMessage == 'username empty'
-//                   ? true
-//                   : false,
-//         ),
-//         const SizedBox(height: 20),
-//         DateWidget(
-//           isError: state is RegisterError && state.errorMessage == 'date empty'
-//               ? true
-//               : false,
-//           label: state is RegisterDateAdded
-//               ? state.date.substring(0, 9)
-//               : mycubit.birth,
-//           onPressed: () {
-//             pickDate(context).then((date) {
-//               mycubit.dateAdded(date.toString());
-//             });
-//           },
-//         ),
-//         const SizedBox(height: 20),
-//         MyTextField(
-//           labelText: 'email',
-//           errorMessage: 'email is required',
-//           keyboardType: TextInputType.name,
-//           icon: null,
-//           controller: mycubit.emailController,
-//           hintText: 'user@example.com',
-//           isError: state is RegisterError && state.errorMessage == 'email empty'
-//               ? true
-//               : false,
-//         ),
-//         const SizedBox(height: 20),
-//         MyTextField(
-//           isPassword: true,
-//           labelText: 'password',
-//           errorMessage: 'password is required',
-//           keyboardType: TextInputType.name,
-//           icon: null,
-//           controller: mycubit.passwordController,
-//           hintText: 'Enter your password',
-//           isError: ((state is RegisterError) &&
-//                   state.errorMessage == 'password empty')
-//               ? true
-//               : false,
-//         ),
-//         const SizedBox(height: 20),
-//         ElevatedButton(
-//             onPressed: () {
-//               mycubit.register();
-//             },
-//             child: const Text('Register')),
-//       ],
-//     );
-//   }
 }

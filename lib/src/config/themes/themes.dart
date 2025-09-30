@@ -36,7 +36,7 @@ TextTheme _buildShrineTextTheme(TextTheme base, BuildContext context,
         labelSmall: base.labelSmall!.copyWith(),
       )
       .apply(
-        fontFamily: 'Rubik',
+        fontFamily: 'Inter',
         displayColor:
             light ? ColorManager.mouvemaBrown : ColorManager.mouvemaWhite,
         bodyColor:

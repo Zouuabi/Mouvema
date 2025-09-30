@@ -64,6 +64,7 @@ class RepositoryImpl extends Repository {
       {required String username,
       required String birthdate,
       required String tel,
+      required String userType,
       required Uint8List? image}) async {
     String urlimage = '';
     if (await internetChecker.isConnected()) {
@@ -81,6 +82,7 @@ class RepositoryImpl extends Repository {
             username: username,
             favoriteLoads: [],
             birdhdate: birthdate,
+            userType: userType,
             imageLink: urlimage);
 
         return const Right(null);
