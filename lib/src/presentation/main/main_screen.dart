@@ -83,7 +83,7 @@ class _MainScreenState extends State<MainScreen> {
                     color: Colors.grey[800],
                     activeColor: Colors.teal,
                     iconSize: 24,
-                    tabBackgroundColor: Colors.teal.withOpacity(0.1),
+                    tabBackgroundColor: Colors.teal.withValues(alpha: 0.1),
                     tabs: [
                       GButton(
                         icon: Icons.home,

@@ -215,19 +215,7 @@ class RepositoryImpl extends Repository {
     }
   }
 
-  @override
-  Future<Either<Failure, void>> continueWithGoogle() async {
-    if (await internetChecker.isConnected()) {
-      try {
-        await auth.signInWithGoogle();
-        return right(null);
-      } catch (e) {
-        return left(Failure(errrorMessage: e.toString()));
-      }
-    } else {
-      return left(Failure(errrorMessage: 'there is no internet connection'));
-    }
-  }
+
 
   @override
   Future<Either<Failure, bool>> isFirstTime() async {

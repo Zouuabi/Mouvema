@@ -1,5 +1,6 @@
 // Core error models and types
 export 'app_error.dart';
+export 'auth_error.dart';
 export 'error_types.dart';
 export 'retry_policy.dart';
 
