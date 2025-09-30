@@ -36,6 +36,7 @@ class AuthError extends AppError {
         type = AuthErrorType.invalidEmail;
         break;
       case 'wrong-password':
+      case 'invalid-credential':
         type = AuthErrorType.wrongPassword;
         break;
       case 'user-not-found':
@@ -55,6 +56,13 @@ class AuthError extends AppError {
         break;
       case 'network-request-failed':
         type = AuthErrorType.networkError;
+        break;
+      case 'operation-not-allowed':
+        type = AuthErrorType.serverError;
+        break;
+      case 'invalid-verification-code':
+      case 'invalid-verification-id':
+        type = AuthErrorType.serverError;
         break;
       default:
         type = AuthErrorType.serverError;
@@ -152,6 +160,19 @@ class PasswordValidator {
         field: 'password',
         validationType: ValidationErrorType.tooShort,
         customMessage: 'Password must be at least 8 characters',
+      );
+    }
+
+    // Check for basic complexity requirements
+    bool hasUppercase = password.contains(RegExp(r'[A-Z]'));
+    bool hasLowercase = password.contains(RegExp(r'[a-z]'));
+    bool hasNumbers = password.contains(RegExp(r'[0-9]'));
+    
+    if (!hasUppercase || !hasLowercase || !hasNumbers) {
+      return AuthError.validation(
+        field: 'password',
+        validationType: ValidationErrorType.invalidFormat,
+        customMessage: 'Password must contain uppercase, lowercase, and numbers',
       );
     }
 

@@ -24,7 +24,7 @@ enum AuthErrorType {
       case AuthErrorType.wrongPassword:
         return AppError(
           code: 'AUTH_WRONG_PASSWORD',
-          userMessage: 'Incorrect password. Please try again.',
+          userMessage: 'Invalid email or password. Please check your credentials and try again.',
           severity: ErrorSeverity.error,
           isRetryable: true,
         );
@@ -59,7 +59,7 @@ enum AuthErrorType {
       case AuthErrorType.userNotFound:
         return AppError(
           code: 'AUTH_USER_NOT_FOUND',
-          userMessage: 'No account found with this email address',
+          userMessage: 'Invalid email or password. Please check your credentials and try again.',
           severity: ErrorSeverity.warning,
           isRetryable: false,
         );

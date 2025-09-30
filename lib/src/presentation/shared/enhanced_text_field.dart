@@ -12,6 +12,7 @@ class EnhancedTextField extends StatefulWidget {
   final AuthError? error;
   final VoidCallback? onChanged;
   final VoidCallback? onClearError;
+  final Function(bool)? onFocusChange;
   final bool showPasswordToggle;
   final bool enabled;
 
@@ -26,6 +27,7 @@ class EnhancedTextField extends StatefulWidget {
     this.error,
     this.onChanged,
     this.onClearError,
+    this.onFocusChange,
     this.showPasswordToggle = true,
     this.enabled = true,
   });
@@ -62,6 +64,8 @@ class _EnhancedTextFieldState extends State<EnhancedTextField> {
               if (hasFocus && hasError) {
                 widget.onClearError?.call();
               }
+              // Call the focus change callback
+              widget.onFocusChange?.call(hasFocus);
             },
             child: TextFormField(
               controller: widget.controller,

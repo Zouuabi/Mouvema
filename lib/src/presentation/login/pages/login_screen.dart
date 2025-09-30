@@ -74,7 +74,13 @@ class LoginScreen extends StatelessWidget {
                         prefixIcon: Icons.email_outlined,
                         keyboardType: TextInputType.emailAddress,
                         error: state.emailError,
-                        onChanged: () => cubit.validateEmailField(),
+                        onChanged: () => cubit.onFieldChanged('email'),
+                        onFocusChange: (hasFocus) {
+                          if (!hasFocus) {
+                            // Validate when user leaves the field
+                            cubit.validateEmailField();
+                          }
+                        },
                         onClearError: () => cubit.clearFieldError('email'),
                       ),
                       
@@ -88,7 +94,13 @@ class LoginScreen extends StatelessWidget {
                         prefixIcon: Icons.lock_outline,
                         isPassword: true,
                         error: state.passwordError,
-                        onChanged: () => cubit.validatePasswordField(),
+                        onChanged: () => cubit.onFieldChanged('password'),
+                        onFocusChange: (hasFocus) {
+                          if (!hasFocus) {
+                            // Validate when user leaves the field
+                            cubit.validatePasswordField();
+                          }
+                        },
                         onClearError: () => cubit.clearFieldError('password'),
                       ),
                       
@@ -172,14 +184,45 @@ class LoginScreen extends StatelessWidget {
       builder: (context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
           ),
-          title: const Text('Error'),
-          content: Text(error.userMessage),
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: error.severity.color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  error.severity.icon,
+                  color: error.severity.color,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Login Failed',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            error.userMessage,
+            style: const TextStyle(fontSize: 16),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
+              child: Text(
+                error.isRetryable ? 'Try Again' : 'OK',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ],
         );

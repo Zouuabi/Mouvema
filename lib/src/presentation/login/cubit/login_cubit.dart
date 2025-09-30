@@ -54,7 +54,7 @@ class LoginScreenCubit extends Cubit<LoginScreenState> {
     }
   }
 
-  /// Real-time email validation
+  /// Validates email field on focus loss (less aggressive)
   void validateEmailField() {
     final emailError = _validateEmail(_emailController.text);
     if (emailError != state.emailError) {
@@ -62,11 +62,20 @@ class LoginScreenCubit extends Cubit<LoginScreenState> {
     }
   }
 
-  /// Real-time password validation
+  /// Validates password field on focus loss (less aggressive)
   void validatePasswordField() {
     final passwordError = _validatePassword(_passwordController.text);
     if (passwordError != state.passwordError) {
       emit(state.copyWith(passwordError: passwordError));
+    }
+  }
+
+  /// Called when user is typing - only clears errors, doesn't show new ones
+  void onFieldChanged(String field) {
+    if (field == 'email' && state.hasEmailError) {
+      emit(state.copyWith(emailError: null));
+    } else if (field == 'password' && state.hasPasswordError) {
+      emit(state.copyWith(passwordError: null));
     }
   }
 
@@ -87,22 +96,17 @@ class LoginScreenCubit extends Cubit<LoginScreenState> {
 
       result.fold(
         (failure) {
-          // Try to parse Firebase Auth error
+          // Map Firebase error codes to proper AuthError
           AuthError authError;
-          try {
-            // Check if it's a Firebase Auth error code
-            final firebaseException = FirebaseAuthException(
-              code: failure.errrorMessage ?? 'unknown',
-              message: failure.errrorMessage,
-            );
-            authError = AuthError.fromFirebaseException(firebaseException);
-          } catch (e) {
-            // Fallback to generic error
-            authError = AuthError(
-              type: AuthErrorType.serverError,
-              userMessage: failure.errrorMessage ?? 'An error occurred during login',
-            );
-          }
+          final errorCode = failure.errrorMessage;
+          
+          // Create a proper FirebaseAuthException for mapping
+          final firebaseException = FirebaseAuthException(
+            code: errorCode,
+            message: failure.errrorMessage,
+          );
+          
+          authError = AuthError.fromFirebaseException(firebaseException);
 
           emit(LoginScreenState(
             status: Status.failed,
