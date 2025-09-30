@@ -1,59 +1,83 @@
 {
   "project_info": {
-    "project_number": "368796721209",
-    "project_id": "startup-9945a",
-    "storage_bucket": "startup-9945a.appspot.com"
+    "project_number": "644048060968",
+    "project_id": "zouabi-org",
+    "storage_bucket": "zouabi-org.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:368796721209:android:d8addf44328b844353ade8",
+        "mobilesdk_app_id": "1:644048060968:android:8a835d352d6485efd42b1d",
         "android_client_info": {
           "package_name": "com.example.doft"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "368796721209-anhggaua8ltbigf35t4g8p2qjost3krf.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.doft",
-            "certificate_hash": "808a8643134a685b2b88f1a9f7bfa6be894ef21b"
-          }
-        },
-        {
-          "client_id": "368796721209-sbqpkmbmsu84ftndgtfqu180s8pktjr8.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.doft",
-            "certificate_hash": "526e2125b1d4be6550c0d41dc202172128d7fa3f"
-          }
-        },
-        {
-          "client_id": "368796721209-8a78v4gf8op1le4o0fb3bso3n0i3185e.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBg4rRItK2u5qqIb1Bby8zOiT1jmRX897k"
+          "current_key": "AIzaSyCUhZDcjddZVO_CSTeRRw3nOxPkoLC0UoY"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "368796721209-3ioj9rpkc8sv53nq2q8rtvqibsuor0qk.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "368796721209-mg7smdqil2nu9n4kgq22l7f3gc1n9f2l.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.doft"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:644048060968:android:0eef965adb1aa08ed42b1d",
+        "android_client_info": {
+          "package_name": "com.example.kalonga"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUhZDcjddZVO_CSTeRRw3nOxPkoLC0UoY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:644048060968:android:7460dc8b548db777d42b1d",
+        "android_client_info": {
+          "package_name": "com.example.mouvema"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUhZDcjddZVO_CSTeRRw3nOxPkoLC0UoY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:644048060968:android:70d764eabf666880d42b1d",
+        "android_client_info": {
+          "package_name": "com.example.vidy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUhZDcjddZVO_CSTeRRw3nOxPkoLC0UoY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
         }
       }
     }

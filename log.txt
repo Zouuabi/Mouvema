@@ -1,0 +1,36 @@
+E/flutter ( 4700): [ERROR:flutter/runtime/dart_vm_initializer.cc(40)] Unhandled Exception: type 'List<Object?>' is not a subtype of type 'PigeonUserDetails?' in type cast
+E/flutter ( 4700): #0      PigeonUserCredential.decode (package:firebase_auth_platform_interface/src/pigeon/messages.pigeon.dart:432:23)
+pigeon.dart:432
+E/flutter ( 4700): #1      _FirebaseAuthHostApiCodec.readValueOfType (package:firebase_auth_platform_interface/src/pigeon/messages.pigeon.dart:830:37)
+pigeon.dart:830
+E/flutter ( 4700): #2      StandardMessageCodec.readValue (package:flutter/src/services/message_codecs.dart:477:12)
+message_codecs.dart:477
+E/flutter ( 4700): #3      StandardMessageCodec.readValueOfType (package:flutter/src/services/message_codecs.dart:522:23)
+message_codecs.dart:522
+E/flutter ( 4700): #4      _FirebaseAuthHostApiCodec.readValueOfType (package:firebase_auth_platform_interface/src/pigeon/messages.pigeon.dart:840:22)
+pigeon.dart:840
+E/flutter ( 4700): #5      StandardMessageCodec.readValue (package:flutter/src/services/message_codecs.dart:477:12)
+message_codecs.dart:477
+E/flutter ( 4700): #6      StandardMessageCodec.decodeMessage (package:flutter/src/services/message_codecs.dart:339:28)
+message_codecs.dart:339
+E/flutter ( 4700): #7      BasicMessageChannel.send (package:flutter/src/services/platform_channel.dart:244:18)
+platform_channel.dart:244
+E/flutter ( 4700): <asynchronous suspension>
+E/flutter ( 4700): #8      FirebaseAuthHostApi.signInWithEmailAndPassword (package:firebase_auth_platform_interface/src/pigeon/messages.pigeon.dart:1153:47)
+pigeon.dart:1153
+E/flutter ( 4700): <asynchronous suspension>
+E/flutter ( 4700): #9      MethodChannelFirebaseAuth.signInWithEmailAndPassword (package:firebase_auth_platform_interface/src/method_channel/method_channel_firebase_auth.dart:343:22)
+method_channel_firebase_auth.dart:343
+E/flutter ( 4700): <asynchronous suspension>
+E/flutter ( 4700): #10     FirebaseAuth.signInWithEmailAndPassword (package:firebase_auth/src/firebase_auth.dart:580:9)
+firebase_auth.dart:580
+E/flutter ( 4700): <asynchronous suspension>
+E/flutter ( 4700): #11     FirebaseAuthentication.signIn (package:mouvema/src/data/data_source/remote_data_source/firebase_auth.dart:23:5)
+firebase_auth.dart:23
+E/flutter ( 4700): <asynchronous suspension>
+E/flutter ( 4700): #12     RepositoryImpl.signIn (package:mouvema/src/data/repository/repository_impl.dart:37:9)
+repository_impl.dart:37
+E/flutter ( 4700): <asynchronous suspension>
+E/flutter ( 4700): #13     LoginScreenCubit.logIn (package:mouvema/src/presentation/login/cubit/login_cubit.dart:40:36)
+login_cubit.dart:40
+E/flutter ( 4700): <asynchronous suspension>
