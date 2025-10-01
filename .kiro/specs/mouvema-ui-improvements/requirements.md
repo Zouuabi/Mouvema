@@ -107,7 +107,22 @@ This feature focuses on comprehensive UI/UX improvements for the Mouvema Flutter
 7. WHEN success or error messages are shown THEN the system SHALL use the same dialog styling and messaging patterns as the login screen
 8. WHEN navigation occurs THEN the system SHALL maintain the same smooth transitions and user flow patterns as other authentication screens
 
-### Requirement 7: Error Handling and User Feedback
+### Requirement 7: Splash Screen Modernization and Text Correction
+
+**User Story:** As a user, I want the splash screen to have the same modern design as other screens and display correct, professional text, so that I get a great first impression of the app.
+
+#### Acceptance Criteria
+
+1. WHEN the app launches THEN the splash screen SHALL use the same white background color as the login and other authentication screens
+2. WHEN the splash screen displays THEN it SHALL use the same logo positioning and styling as the login screen
+3. WHEN the splash screen shows text THEN it SHALL display grammatically correct and professional welcome messaging
+4. WHEN the splash screen loads THEN it SHALL use the same typography, spacing, and Material 3 design principles as other screens
+5. WHEN the splash screen transitions THEN it SHALL maintain smooth animations consistent with the app's design language
+6. WHEN the splash screen displays THEN it SHALL remove the background image and use clean, minimal design matching other screens
+7. WHEN users see the splash screen THEN the text SHALL be properly formatted and professionally written
+8. WHEN the splash screen appears THEN it SHALL maintain the same visual hierarchy and layout principles as the login screen
+
+### Requirement 8: Error Handling and User Feedback
 
 **User Story:** As a user, I want clear feedback when things go wrong and guidance on how to resolve issues, so that I can successfully complete my tasks.
 

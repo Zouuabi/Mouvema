@@ -131,3 +131,27 @@
   - Maintain consistent back navigation and screen transitions
   - _Requirements: 6.8_
 
+- [ ] 6. Modernize splash screen design and correct text content
+- [x] 6.1 Update splash screen with modern login-style design
+
+  - Replace background image with clean white background matching login screen
+  - Use same logo positioning and styling as login screen
+  - Apply consistent typography, spacing, and Material 3 design principles
+  - Remove outdated background image approach for clean, minimal design
+  - _Requirements: 7.1, 7.2, 7.4, 7.6, 7.8_
+
+- [x] 6.2 Correct splash screen text content and formatting
+
+  - Fix grammatical issues in welcome text for professional presentation
+  - Improve text formatting and layout for better readability
+  - Ensure text follows same visual hierarchy as login screen
+  - Apply proper professional messaging and branding
+  - _Requirements: 7.3, 7.7_
+
+- [x] 6.3 Integrate smooth transitions and animations
+
+  - Implement smooth transitions consistent with app's design language
+  - Ensure splash screen animations match other screen transitions
+  - Maintain consistent timing and animation patterns
+  - _Requirements: 7.5_
+

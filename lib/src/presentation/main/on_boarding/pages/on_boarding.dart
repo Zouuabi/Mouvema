@@ -37,17 +37,17 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
     ItemData(
       Colors.teal,
       "assets/images/carousel1.jpg",
-      "The best app for shipping & delivery in this century",
+      "The best app for shipping and delivery services",
     ),
     ItemData(
       Colors.teal,
       "assets/images/carousel2.jpg",
-      "Wassa3 Wassa3 mouvema jet",
+      "Fast, reliable, and secure transportation solutions",
     ),
     ItemData(
       Colors.teal,
       "assets/images/carousel3.jpg",
-      "ahla b nahla odkhel ay ",
+      "Connect with trusted drivers and expand your business",
     ),
   ];
 
@@ -102,12 +102,30 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
             itemBuilder: (context, index) {
               return SizedBox(
                 width: double.infinity,
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
+                height: double.infinity,
+                child: Stack(
+                  fit: StackFit.expand,
                   children: <Widget>[
+                    // Background image
                     Image.asset(
                       data[index].image,
-                      fit: BoxFit.fill,
+                      fit: BoxFit.cover,
+                    ),
+                    // Gradient overlay for better text readability
+                    Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.transparent,
+                            Color.fromRGBO(0, 0, 0, 0.3),
+                            Color.fromRGBO(0, 0, 0, 0.6),
+                          ],
+                          stops: [0.0, 0.5, 0.8, 1.0],
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -137,16 +155,36 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
             ),
           ),
           Positioned(
-              bottom: 120,
-              right: 20,
-              left: 20,
-              child: Center(
-                child: Text(
-                  data[page].text1,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.displaySmall,
-                ),
-              )),
+            bottom: 120,
+            right: 20,
+            left: 20,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              decoration: BoxDecoration(
+                color: ColorManager.mouvemaWhite.withOpacity(0.95),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Text(
+                data[page].text1,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontFamily: 'Inter',
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: ColorManager.mouvemaBrown,
+                      height: 1.4,
+                      letterSpacing: -0.2,
+                    ),
+              ),
+            ),
+          ),
           Align(
             alignment: Alignment.bottomRight,
             child: Padding(
@@ -156,7 +194,25 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
                   liquidController.animateToPage(
                       page: data.length - 1, duration: 700);
                 },
-                child: const Text("Skip to End"),
+                style: TextButton.styleFrom(
+                  backgroundColor:
+                      ColorManager.mouvemaWhite.withValues(alpha: 0.9),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 2,
+                ),
+                child: const Text(
+                  "Skip",
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: ColorManager.mouvemaTeal,
+                  ),
+                ),
               ),
             ),
           ),
@@ -171,7 +227,30 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
                           ? 0
                           : liquidController.currentPage + 1);
                 },
-                child: const Text("Next"),
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.black.withOpacity(0.3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: Text(
+                  "Next",
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                    shadows: [
+                      const Shadow(
+                        color: Colors.black54,
+                        offset: Offset(0, 1),
+                        blurRadius: 2,
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           )
