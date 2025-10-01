@@ -92,7 +92,22 @@ This feature focuses on comprehensive UI/UX improvements for the Mouvema Flutter
 6. WHEN buttons are displayed THEN the system SHALL maintain consistent sizing, padding, and visual hierarchy
 7. WHEN animations are used THEN the system SHALL ensure smooth 60fps performance on target devices
 
-### Requirement 6: Error Handling and User Feedback
+### Requirement 6: Forgot Password Screen Modernization
+
+**User Story:** As a user, I want the forgot password screens to have the same modern design, theme, and user experience as the login screen, so that I have a consistent and professional authentication experience.
+
+#### Acceptance Criteria
+
+1. WHEN a user opens the forgot password screen THEN the system SHALL display the same visual design language as the login screen (colors, typography, spacing, layout)
+2. WHEN a user views the forgot password screen THEN the system SHALL use the same logo, background color, and overall styling as the login screen
+3. WHEN a user interacts with the email input field THEN the system SHALL use the same EnhancedTextField component with consistent styling and validation
+4. WHEN a user sees the reset account screen THEN the system SHALL follow the same card-based layout and Material 3 design principles as the login screen
+5. WHEN form validation occurs THEN the system SHALL use the same error handling patterns and visual feedback as the login screen
+6. WHEN loading states are displayed THEN the system SHALL use the same LoadingButton component and loading indicators as the login screen
+7. WHEN success or error messages are shown THEN the system SHALL use the same dialog styling and messaging patterns as the login screen
+8. WHEN navigation occurs THEN the system SHALL maintain the same smooth transitions and user flow patterns as other authentication screens
+
+### Requirement 7: Error Handling and User Feedback
 
 **User Story:** As a user, I want clear feedback when things go wrong and guidance on how to resolve issues, so that I can successfully complete my tasks.
 

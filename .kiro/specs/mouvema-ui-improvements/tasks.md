@@ -102,3 +102,32 @@
   - Create consistent loading states throughout the posting workflow
   - _Requirements: 2.7, 2.8, 5.4, 5.5_
 
+- [ ] 5. Modernize forgot password screens to match login design
+- [x] 5.1 Update forgot password screen with modern login-style design
+
+
+
+
+
+
+  - Replace current forgot password screen layout with login screen's design language
+  - Use same background color, logo positioning, and typography as login screen
+  - Apply consistent spacing, padding, and Material 3 styling throughout
+  - Remove outdated option selection UI and simplify to direct email input
+  - _Requirements: 6.1, 6.2, 6.3_
+
+- [ ] 5.2 Modernize reset account screen with enhanced components
+
+  - Replace MyTextField with EnhancedTextField component for consistency
+  - Apply same card-based layout and visual hierarchy as login screen
+  - Use LoadingButton component instead of basic ElevatedButton
+  - Implement same error dialog styling and success feedback patterns
+  - _Requirements: 6.3, 6.4, 6.5, 6.6, 6.7_
+
+- [ ] 5.3 Integrate consistent navigation and user flow patterns
+
+  - Ensure smooth transitions between forgot password screens match login flow
+  - Apply same success animation and navigation patterns as login screen
+  - Maintain consistent back navigation and screen transitions
+  - _Requirements: 6.8_
+
