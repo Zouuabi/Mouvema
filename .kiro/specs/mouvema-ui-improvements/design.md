@@ -45,8 +45,8 @@ Data Layer
 - **Layout**: Single-column layout with generous white space
 - **Components**:
   - Logo section (top 25% of screen)
-  - Email input field with validation
-  - Password input field with show/hide toggle
+  - Email input field with validation (using EnhancedTextField)
+  - Password input field with show/hide toggle (using EnhancedTextField)
   - Login button with loading states
   - Register link at bottom
 - **Visual Design**:
@@ -55,18 +55,30 @@ Data Layer
   - Material 3 input fields with floating labels
   - Smooth micro-animations for state changes
 
+#### Separate Widget Architecture
+- **LoginTextField**: Uses EnhancedTextField for login screen
+- **RegisterTextField**: Independent widget for registration with same visual design
+- **Rationale**: Prevents error handling conflicts between login and register forms while maintaining consistent UI
+
 #### Register Screen Redesign
-- **Layout**: Similar to login with additional fields
+- **Layout**: Multi-step registration flow without phone number step
 - **Components**:
-  - Email input with real-time validation
-  - Password input with strength indicator
-  - Confirm password field
-  - Terms acceptance checkbox
-  - Register button with progress states
+  - Step 1: User type selection (Shipper/Driver)
+  - Step 2: Username input with validation
+  - Step 3: Birth date selection
+  - Step 4: Email and password input with validation
+  - Progress indicator showing current step
+  - Navigation controls (back/next buttons)
 - **Validation**:
   - Real-time email format validation
   - Password strength meter (weak/medium/strong)
+  - Username availability checking
+  - Age validation (18+ years)
   - Immediate feedback for existing email detection
+- **Firebase Integration**:
+  - Proper Firebase Auth account creation
+  - Profile data storage without phone number
+  - Error handling for Firebase-specific errors
 
 #### Error Handling Interface
 ```dart

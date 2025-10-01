@@ -120,7 +120,7 @@ class AuthError extends AppError {
 /// Email validation utility
 class EmailValidator {
   static final RegExp _emailRegex = RegExp(
-    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
   );
 
   static AuthError? validate(String email) {

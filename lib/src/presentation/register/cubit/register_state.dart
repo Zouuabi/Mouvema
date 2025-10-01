@@ -10,7 +10,6 @@ class RegisterState extends Equatable {
     this.emailError,
     this.passwordError,
     this.usernameError,
-    this.phoneError,
     this.birthDateError,
     this.userTypeError,
     this.passwordStrength = PasswordStrength.empty,
@@ -22,7 +21,6 @@ class RegisterState extends Equatable {
   final AuthError? emailError;
   final AuthError? passwordError;
   final AuthError? usernameError;
-  final AuthError? phoneError;
   final AuthError? birthDateError;
   final AuthError? userTypeError;
   final PasswordStrength passwordStrength;
@@ -30,14 +28,12 @@ class RegisterState extends Equatable {
   bool get hasEmailError => emailError != null;
   bool get hasPasswordError => passwordError != null;
   bool get hasUsernameError => usernameError != null;
-  bool get hasPhoneError => phoneError != null;
   bool get hasBirthDateError => birthDateError != null;
   bool get hasUserTypeError => userTypeError != null;
   bool get hasValidationErrors => 
       hasEmailError || 
       hasPasswordError || 
       hasUsernameError || 
-      hasPhoneError || 
       hasBirthDateError || 
       hasUserTypeError;
 
@@ -48,7 +44,6 @@ class RegisterState extends Equatable {
     AuthError? emailError,
     AuthError? passwordError,
     AuthError? usernameError,
-    AuthError? phoneError,
     AuthError? birthDateError,
     AuthError? userTypeError,
     PasswordStrength? passwordStrength,
@@ -61,7 +56,6 @@ class RegisterState extends Equatable {
       emailError: clearErrors ? null : (emailError ?? this.emailError),
       passwordError: clearErrors ? null : (passwordError ?? this.passwordError),
       usernameError: clearErrors ? null : (usernameError ?? this.usernameError),
-      phoneError: clearErrors ? null : (phoneError ?? this.phoneError),
       birthDateError: clearErrors ? null : (birthDateError ?? this.birthDateError),
       userTypeError: clearErrors ? null : (userTypeError ?? this.userTypeError),
       passwordStrength: passwordStrength ?? this.passwordStrength,
@@ -76,7 +70,6 @@ class RegisterState extends Equatable {
     emailError, 
     passwordError, 
     usernameError, 
-    phoneError, 
     birthDateError, 
     userTypeError, 
     passwordStrength

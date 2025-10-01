@@ -19,7 +19,6 @@ class RegisterCubit extends Cubit<RegisterState> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
 
   // Additional form state
   DateTime? _selectedBirthDate;
@@ -67,11 +66,7 @@ class RegisterCubit extends Cubit<RegisterState> {
     return null;
   }
 
-  /// Validates phone field and returns error if invalid
-  AuthError? _validatePhone(String phone) {
-    // No validation for phone number as requested
-    return null;
-  }
+
 
   /// Validates birth date and returns error if invalid
   AuthError? _validateBirthDate(DateTime? birthDate) {
@@ -122,38 +117,31 @@ class RegisterCubit extends Cubit<RegisterState> {
     final emailError = _validateEmail(emailController.text);
     final passwordError = _validatePassword(passwordController.text);
     final usernameError = _validateUsername(usernameController.text);
-    final phoneError = _validatePhone(phoneController.text);
     final birthDateError = _validateBirthDate(_selectedBirthDate);
     final userTypeError = _validateUserType(_selectedUserType);
 
-    if (emailError != null || 
-        passwordError != null || 
-        usernameError != null || 
-        phoneError != null || 
-        birthDateError != null || 
-        userTypeError != null) {
-      emit(RegisterState(
-        status: Status.validationError,
-        emailError: emailError,
-        passwordError: passwordError,
-        usernameError: usernameError,
-        phoneError: phoneError,
-        birthDateError: birthDateError,
-        userTypeError: userTypeError,
-        passwordStrength: PasswordValidator.getStrength(passwordController.text),
-      ));
-      return false;
-    }
+    // Update state with current validation results
+    emit(state.copyWith(
+      emailError: emailError,
+      passwordError: passwordError,
+      usernameError: usernameError,
+      birthDateError: birthDateError,
+      userTypeError: userTypeError,
+      passwordStrength: PasswordValidator.getStrength(passwordController.text),
+    ));
 
-    return true;
+    // Return false if any validation errors exist
+    return emailError == null && 
+           passwordError == null && 
+           usernameError == null && 
+           birthDateError == null && 
+           userTypeError == null;
   }
 
   /// Real-time email validation
   void validateEmailField() {
     final emailError = _validateEmail(emailController.text);
-    if (emailError != state.emailError) {
-      emit(state.copyWith(emailError: emailError));
-    }
+    emit(state.copyWith(emailError: emailError));
   }
 
   /// Real-time password validation and strength calculation
@@ -161,12 +149,10 @@ class RegisterCubit extends Cubit<RegisterState> {
     final passwordError = _validatePassword(passwordController.text);
     final passwordStrength = PasswordValidator.getStrength(passwordController.text);
     
-    if (passwordError != state.passwordError || passwordStrength != state.passwordStrength) {
-      emit(state.copyWith(
-        passwordError: passwordError,
-        passwordStrength: passwordStrength,
-      ));
-    }
+    emit(state.copyWith(
+      passwordError: passwordError,
+      passwordStrength: passwordStrength,
+    ));
   }
 
   /// Real-time username validation
@@ -177,48 +163,32 @@ class RegisterCubit extends Cubit<RegisterState> {
     }
   }
 
-  /// Real-time phone validation
-  void validatePhoneField() {
-    final phoneError = _validatePhone(phoneController.text);
-    if (phoneError != state.phoneError) {
-      emit(state.copyWith(phoneError: phoneError));
-    }
-  }
+
 
   /// Clears field-specific errors when user starts typing
   void clearFieldError(String field) {
     switch (field) {
       case 'email':
-        if (state.hasEmailError) {
-          emit(state.copyWith(emailError: null));
-        }
+        emit(state.copyWith(emailError: null));
         break;
       case 'password':
-        if (state.hasPasswordError) {
-          emit(state.copyWith(passwordError: null));
-        }
+        emit(state.copyWith(passwordError: null));
         break;
       case 'username':
-        if (state.hasUsernameError) {
-          emit(state.copyWith(usernameError: null));
-        }
-        break;
-      case 'phone':
-        if (state.hasPhoneError) {
-          emit(state.copyWith(phoneError: null));
-        }
+        emit(state.copyWith(usernameError: null));
         break;
       case 'birthDate':
-        if (state.hasBirthDateError) {
-          emit(state.copyWith(birthDateError: null));
-        }
+        emit(state.copyWith(birthDateError: null));
         break;
       case 'userType':
-        if (state.hasUserTypeError) {
-          emit(state.copyWith(userTypeError: null));
-        }
+        emit(state.copyWith(userTypeError: null));
         break;
     }
+  }
+
+  /// Clears all validation errors
+  void clearAllErrors() {
+    emit(state.copyWith(clearErrors: true));
   }
 
   /// Updates the selected birth date
@@ -255,15 +225,15 @@ class RegisterCubit extends Cubit<RegisterState> {
   }
 
   void register() async {
-    // Clear any previous errors
-    emit(state.copyWith(clearErrors: true));
-
-    // Validate fields
+    print("pressing");
+    // Validate fields first
     if (!_validateFields()) {
+      // Validation failed, errors are already emitted by _validateFields
       return;
     }
 
-    emit(const RegisterState(status: Status.loading));
+    // All validation passed, proceed with registration
+    emit(state.copyWith(status: Status.loading));
 
     try {
       // First, create the Firebase Auth account
@@ -279,7 +249,7 @@ class RegisterCubit extends Cubit<RegisterState> {
           try {
             // Check if it's a Firebase Auth error code
             final firebaseException = FirebaseAuthException(
-              code: failure.errrorMessage ?? 'unknown',
+              code: failure.errrorMessage,
               message: failure.errrorMessage,
             );
             authError = AuthError.fromFirebaseException(firebaseException);
@@ -287,7 +257,7 @@ class RegisterCubit extends Cubit<RegisterState> {
             // Fallback to generic error
             authError = AuthError(
               type: AuthErrorType.serverError,
-              userMessage: failure.errrorMessage ?? 'An error occurred during registration',
+              userMessage: failure.errrorMessage,
             );
           }
 
@@ -303,7 +273,7 @@ class RegisterCubit extends Cubit<RegisterState> {
             final profileResult = await _repositoryImpl.fillProfil(
               username: usernameController.text.trim(),
               birthdate: _formatDate(_selectedBirthDate!),
-              tel: phoneController.text.trim(),
+              tel: '', // Empty phone number since we removed the phone step
               userType: _selectedUserType!.name,
               image: _selectedImage,
             );
@@ -364,7 +334,6 @@ class RegisterCubit extends Cubit<RegisterState> {
     emailController.dispose();
     passwordController.dispose();
     usernameController.dispose();
-    phoneController.dispose();
     return super.close();
   }
 }

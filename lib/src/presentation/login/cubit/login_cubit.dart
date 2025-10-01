@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../core/failure.dart';
 import '../../../core/errors/errors.dart';
+import '../../../core/errors/error_types.dart';
 import '../../../data/repository/repository_impl.dart';
 part 'login_state.dart';
 
@@ -23,9 +24,16 @@ class LoginScreenCubit extends Cubit<LoginScreenState> {
     return EmailValidator.validate(email);
   }
 
-  /// Validates password field and returns error if invalid
+  /// Validates password field and returns error if invalid (simplified for login)
   AuthError? _validatePassword(String password) {
-    return PasswordValidator.validate(password);
+    if (password.isEmpty) {
+      return AuthError.validation(
+        field: 'password',
+        validationType: ValidationErrorType.required,
+        customMessage: 'Password is required',
+      );
+    }
+    return null; // No complexity validation for login
   }
 
   /// Validates all fields and emits validation errors if any

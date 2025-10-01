@@ -34,29 +34,13 @@ class ProfileScreen extends StatelessWidget {
                   ).show();
                 } else if (state.status == Status.logOut) {
                   // Show quick success message and navigate after delay
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Row(
-                        children: [
-                          Icon(Icons.check_circle, color: Colors.white),
-                          SizedBox(width: 8),
-                          Text('Logged out successfully!'),
-                        ],
-                      ),
-                      backgroundColor: Colors.green,
-                      duration: Duration(milliseconds: 1000),
-                    ),
-                  );
 
-                  // Navigate to login after a short delay to allow Firebase auth state to update
-                  Future.delayed(const Duration(milliseconds: 500), () {
-                    if (context.mounted) {
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        Routes.login,
-                        (route) => false,
-                      );
-                    }
-                  });
+                  if (context.mounted) {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      Routes.login,
+                      (route) => false,
+                    );
+                  }
                 }
               },
               builder: (context, state) {

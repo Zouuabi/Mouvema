@@ -20,6 +20,20 @@ This feature focuses on comprehensive UI/UX improvements for the Mouvema Flutter
 6. WHEN a user successfully authenticates THEN the system SHALL navigate to the main screen within 2 seconds
 7. WHEN a user views the authentication screens THEN the system SHALL display a modern, consistent design with proper spacing and typography
 
+### Requirement 1.1: Registration Flow Simplification
+
+**User Story:** As a user, I want a streamlined registration process without unnecessary steps, so that I can quickly create an account and start using the application.
+
+#### Acceptance Criteria
+
+1. WHEN a user starts the registration process THEN the system SHALL NOT include a phone number collection step
+2. WHEN a user completes registration THEN the system SHALL only require user type, username, birth date, email, and password
+3. WHEN a user registers THEN the system SHALL integrate properly with Firebase Authentication without conflicts
+4. WHEN registration form fields are displayed THEN the system SHALL use separate text field widgets for login and register to avoid error handling conflicts
+5. WHEN a user interacts with registration fields THEN the system SHALL maintain consistent UI appearance with login fields but use independent validation logic
+6. WHEN Firebase account creation succeeds THEN the system SHALL properly save user profile data without phone number requirement
+7. WHEN registration validation occurs THEN the system SHALL not validate or require phone number input
+
 ### Requirement 2: Post Load Screen Enhancement
 
 **User Story:** As a user, I want an intuitive and visually appealing interface for posting loads with reliable map functionality, so that I can efficiently create load postings.

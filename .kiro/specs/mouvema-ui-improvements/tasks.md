@@ -45,6 +45,19 @@
   - Implement smooth loading states and success animations for authentication
   - _Requirements: 1.6, 1.7, 5.1, 5.2_
 
+- [x] 2.4 Fix registration flow and Firebase integration
+
+
+
+
+  - Remove phone number step from registration process (step 2 in current flow)
+  - Update RegisterCubit to skip phone validation and storage
+  - Fix Firebase integration to properly create accounts without phone number conflicts
+  - Ensure RegisterTextField widget is completely independent from EnhancedTextField to avoid error handling conflicts
+  - Update registration flow to only collect: user type, username, birth date, email, and password
+  - Test Firebase account creation and profile storage without phone number requirement
+  - _Requirements: 1.1.1, 1.1.2, 1.1.3, 1.1.4, 1.1.5, 1.1.6, 1.1.7_
+
 - [ ] 3. Enhance geocoding and location services
 - [ ] 3.1 Create enhanced geocoding service with caching and retry logic
 
