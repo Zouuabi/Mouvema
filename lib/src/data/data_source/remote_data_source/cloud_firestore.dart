@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/load.dart';
 import '../../models/user.dart';
+
 ///
 class CloudFiresore {
   final _firestore = FirebaseFirestore.instance;
@@ -73,7 +74,7 @@ class CloudFiresore {
       required String imageLink,
       required String username,
       required String email,
-      required String birdhdate,
+      required String birthdate,
       required String tel,
       required String userType,
       required List<String> favoriteLoads}) async {
@@ -83,9 +84,9 @@ class CloudFiresore {
       'email': email,
       'tel': tel,
       'username': username,
-      'birthdate': birdhdate,
+      'birthdate': birthdate,
       'userType': userType,
-      'favoriteLoads': []
+      'favoriteLoads': favoriteLoads,
     };
     await _firestore.collection(collectionrRef).doc(uid).set(user);
   }

@@ -27,7 +27,8 @@ class AuthError extends AppError {
         );
 
   /// Creates an AuthError from a Firebase Auth Exception
-  factory AuthError.fromFirebaseException(FirebaseAuthException exception, {String? field}) {
+  factory AuthError.fromFirebaseException(FirebaseAuthException exception,
+      {String? field}) {
     AuthErrorType type;
     String? technicalMessage = exception.message;
 
@@ -87,7 +88,9 @@ class AuthError extends AppError {
 
     switch (validationType) {
       case ValidationErrorType.required:
-        type = field == 'email' ? AuthErrorType.invalidEmail : AuthErrorType.weakPassword;
+        type = field == 'email'
+            ? AuthErrorType.invalidEmail
+            : AuthErrorType.weakPassword;
         message = customMessage ?? '$field is required';
         break;
       case ValidationErrorType.invalidFormat:
@@ -119,9 +122,8 @@ class AuthError extends AppError {
 
 /// Email validation utility
 class EmailValidator {
-  static final RegExp _emailRegex = RegExp(
-    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-  );
+  static final RegExp _emailRegex =
+      RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
 
   static AuthError? validate(String email) {
     if (email.isEmpty) {
@@ -159,20 +161,31 @@ class PasswordValidator {
       return AuthError.validation(
         field: 'password',
         validationType: ValidationErrorType.tooShort,
-        customMessage: 'Password must be at least 8 characters',
+        customMessage: 'Password must be at least 8 characters long',
       );
     }
 
-    // Check for basic complexity requirements
-    bool hasUppercase = password.contains(RegExp(r'[A-Z]'));
-    bool hasLowercase = password.contains(RegExp(r'[a-z]'));
-    bool hasNumbers = password.contains(RegExp(r'[0-9]'));
-    
-    if (!hasUppercase || !hasLowercase || !hasNumbers) {
+    if (!password.contains(RegExp(r'[A-Z]'))) {
       return AuthError.validation(
         field: 'password',
         validationType: ValidationErrorType.invalidFormat,
-        customMessage: 'Password must contain uppercase, lowercase, and numbers',
+        customMessage: 'Password must contain at least one uppercase letter',
+      );
+    }
+
+    if (!password.contains(RegExp(r'[a-z]'))) {
+      return AuthError.validation(
+        field: 'password',
+        validationType: ValidationErrorType.invalidFormat,
+        customMessage: 'Password must contain at least one lowercase letter',
+      );
+    }
+
+    if (!password.contains(RegExp(r'[0-9]'))) {
+      return AuthError.validation(
+        field: 'password',
+        validationType: ValidationErrorType.invalidFormat,
+        customMessage: 'Password must contain at least one number',
       );
     }
 

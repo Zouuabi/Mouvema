@@ -14,6 +14,7 @@ import '../data_source/remote_data_source/firebase_storage.dart';
 import '../models/load.dart';
 import '../models/user.dart';
 import '../../core/internet_checker.dart';
+
 ///
 class RepositoryImpl extends Repository {
   RepositoryImpl({required this.internetChecker, required this.localStorage});
@@ -81,7 +82,7 @@ class RepositoryImpl extends Repository {
             email: usr.email!,
             username: username,
             favoriteLoads: [],
-            birdhdate: birthdate,
+            birthdate: birthdate,
             userType: userType,
             imageLink: urlimage);
 
@@ -216,8 +217,6 @@ class RepositoryImpl extends Repository {
       return left(Failure(errrorMessage: 'there is no internet connection'));
     }
   }
-
-
 
   @override
   Future<Either<Failure, bool>> isFirstTime() async {

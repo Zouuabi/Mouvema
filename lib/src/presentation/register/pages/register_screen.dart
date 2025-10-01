@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mouvema/src/config/routes/routes.dart';
+import 'package:mouvema/src/presentation/shared/enhanced_text_field.dart';
+import 'package:mouvema/src/presentation/shared/password_strength_indicator.dart';
 
 import '../../../core/errors/auth_error.dart';
 import '../../../data/repository/repository_impl.dart';
@@ -123,8 +125,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-
-
   Widget _buildNameStep(BuildContext context, RegisterState state) {
     final cubit = BlocProvider.of<RegisterCubit>(context);
 
@@ -145,16 +145,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
           const SizedBox(height: 40),
 
           // Username input
-          RegisterTextField(
+          EnhancedTextField(
             controller: cubit.usernameController,
             hintText: 'Enter your username',
             labelText: 'Username',
             prefixIcon: Icons.person_outline,
             error: state.usernameError,
-            onChanged: () {
-              cubit.clearFieldError('username');
-              setState(() {});
-            },
+            onChanged: () => cubit.validateUsernameField(),
           ),
         ],
       ),
@@ -289,19 +286,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
     RegisterCubit cubit,
   ) {
     return GestureDetector(
-      onTap: () {
-        onTap();
-        // Trigger validation for user type
-        cubit.clearFieldError('userType');
-        setState(() {});
-      },
+      onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1) : Colors.grey.shade100,
+          color: isSelected
+              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
+              : Colors.grey.shade100,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: isSelected ? Theme.of(context).colorScheme.primary : Colors.transparent,
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary
+                : Colors.transparent,
             width: 2,
           ),
         ),
@@ -344,70 +340,71 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _buildPasswordStep(BuildContext context, RegisterState state) {
     final cubit = BlocProvider.of<RegisterCubit>(context);
 
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 40),
-          const Text(
-            'Create account',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 40),
+            const Text(
+              'Create account',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
             ),
-          ),
-          const SizedBox(height: 40),
+            const SizedBox(height: 40),
 
-          // Email input
-          RegisterTextField(
-            controller: cubit.emailController,
-            hintText: 'Enter your email',
-            labelText: 'Email',
-            prefixIcon: Icons.email_outlined,
-            keyboardType: TextInputType.emailAddress,
-            error: state.emailError,
-            onChanged: () {
-              cubit.clearFieldError('email');
-              setState(() {});
-            },
-          ),
+            // Email input
+            EnhancedTextField(
+              controller: cubit.emailController,
+              hintText: 'Enter your email',
+              labelText: 'Email',
+              prefixIcon: Icons.email_outlined,
+              keyboardType: TextInputType.emailAddress,
+              error: state.emailError,
+              // Real-time validation on every keystroke
+              onChanged: () => cubit.validateEmailField(),
+            ),
 
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-          // Password input
-          RegisterTextField(
-            controller: cubit.passwordController,
-            hintText: 'Enter your password',
-            labelText: 'Password',
-            prefixIcon: Icons.lock_outline,
-            isPassword: true,
-            error: state.passwordError,
-            onChanged: () {
-              cubit.clearFieldError('password');
-              setState(() {});
-            },
-          ),
+            // Password input
+            EnhancedTextField(
+              controller: cubit.passwordController,
+              hintText: 'Enter your password',
+              labelText: 'Password',
+              prefixIcon: Icons.lock_outline,
+              isPassword: true,
+              error: state.passwordError,
+              // Real-time validation and strength update on every keystroke
+              onChanged: () => cubit.validatePasswordField(),
+            ),
 
-          const Spacer(),
-
-          // Register button
-          BlocBuilder<RegisterCubit, RegisterState>(
-            builder: (context, buttonState) {
-              final isEnabled = _canCreateAccount(cubit, buttonState);
-              return SizedBox(
-                width: double.infinity,
-                child: LoadingButton(
-                  onPressed: isEnabled ? () => cubit.register() : null,
-                  text: 'Create Account',
-                  isLoading: buttonState.status == Status.loading,
-                  height: 50,
-                ),
-              );
-            },
-          ),
-        ],
+            PasswordStrengthIndicator(
+              strength: state.passwordStrength,
+              password: cubit.passwordController.text,
+            ),
+            const SizedBox(height: 40),
+            // Register button
+            BlocBuilder<RegisterCubit, RegisterState>(
+              builder: (context, buttonState) {
+                final isEnabled = _canCreateAccount(cubit, buttonState);
+                return SizedBox(
+                  width: double.infinity,
+                  child: LoadingButton(
+                    onPressed: isEnabled ? () => cubit.register() : null,
+                    text: 'Create Account',
+                    isLoading: buttonState.status == Status.loading,
+                    height: 50,
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -419,12 +416,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
       case 1: // Name step
         // Validate username and check if it's valid
         if (cubit.usernameController.text.isEmpty) return false;
-        final usernameError = cubit.validateUsernameSync(cubit.usernameController.text);
+        final usernameError =
+            cubit.validateUsernameSync(cubit.usernameController.text);
         return usernameError == null;
       case 2: // Birthday step (was step 3, now step 2)
         return cubit.selectedBirthDate != null;
       case 3: // Password step (was step 4, now step 3)
-        if (cubit.emailController.text.isEmpty || cubit.passwordController.text.isEmpty) {
+        if (cubit.emailController.text.isEmpty ||
+            cubit.passwordController.text.isEmpty) {
           return false;
         }
         // Check current state errors instead of validating again
@@ -441,23 +440,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
         cubit.selectedUserType != null &&
         cubit.emailController.text.isNotEmpty &&
         cubit.passwordController.text.isNotEmpty;
-    
+
     // Check if there are no validation errors (removed phone error check)
     final hasNoErrors = state.usernameError == null &&
         state.birthDateError == null &&
         state.userTypeError == null &&
         state.emailError == null &&
         state.passwordError == null;
-    
+
     final isNotLoading = state.status != Status.loading;
-    
+
     return hasAllFields && hasNoErrors && isNotLoading;
   }
 
   void _nextStep(RegisterCubit cubit) {
     // Validate current step before proceeding
     bool canProceed = true;
-    
+
     switch (_currentStep) {
       case 1: // Name step - validate username
         cubit.validateUsernameField();
@@ -467,7 +466,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         cubit.validatePasswordField();
         break;
     }
-    
+
     if (canProceed && _currentStep < _totalSteps - 1) {
       setState(() {
         _currentStep++;
@@ -530,13 +529,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
             borderRadius: BorderRadius.circular(12),
           ),
           title: const Text('Welcome!'),
-          content: const Text('Your account has been created successfully. You are now logged in.'),
+          content: const Text(
+              'Your account has been created successfully. You are now logged in.'),
           actions: [
             TextButton(
               onPressed: () {
                 // Navigate directly to main screen since user is already logged in
                 Navigator.pushNamedAndRemoveUntil(
-                  context, 
+                  context,
                   Routes.main,
                   (route) => false,
                 );

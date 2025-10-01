@@ -36,12 +36,13 @@ class LoginScreenState extends Equatable {
       status: status ?? this.status,
       errorMessage: errorMessage ?? this.errorMessage,
       data: data ?? this.data,
-      authError: clearErrors ? null : (authError ?? this.authError),
-      emailError: clearErrors ? null : (emailError ?? this.emailError),
-      passwordError: clearErrors ? null : (passwordError ?? this.passwordError),
+      authError: clearErrors ? null : authError,
+      emailError: clearErrors ? null : emailError,
+      passwordError: clearErrors ? null : passwordError,
     );
   }
 
   @override
-  List<Object?> get props => [status, errorMessage, data, authError, emailError, passwordError];
+  List<Object?> get props =>
+      [status, errorMessage, data, authError, emailError, passwordError];
 }

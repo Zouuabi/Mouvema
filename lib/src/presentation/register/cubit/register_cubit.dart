@@ -32,7 +32,7 @@ class RegisterCubit extends Cubit<RegisterState> {
 
   /// Validates email field and returns error if invalid
   AuthError? _validateEmail(String email) {
-    return EmailValidator.validate(email);
+    return EmailValidator.validate(email.trim());
   }
 
   /// Validates password field and returns error if invalid
@@ -66,8 +66,6 @@ class RegisterCubit extends Cubit<RegisterState> {
     return null;
   }
 
-
-
   /// Validates birth date and returns error if invalid
   AuthError? _validateBirthDate(DateTime? birthDate) {
     if (birthDate == null) {
@@ -77,10 +75,10 @@ class RegisterCubit extends Cubit<RegisterState> {
         customMessage: 'Date of birth is required',
       );
     }
-    
+
     final now = DateTime.now();
     final age = now.year - birthDate.year;
-    
+
     if (age < 18) {
       return AuthError.validation(
         field: 'birthDate',
@@ -88,7 +86,7 @@ class RegisterCubit extends Cubit<RegisterState> {
         customMessage: 'You must be at least 18 years old',
       );
     }
-    
+
     if (age > 100) {
       return AuthError.validation(
         field: 'birthDate',
@@ -96,7 +94,7 @@ class RegisterCubit extends Cubit<RegisterState> {
         customMessage: 'Please enter a valid birth date',
       );
     }
-    
+
     return null;
   }
 
@@ -131,11 +129,11 @@ class RegisterCubit extends Cubit<RegisterState> {
     ));
 
     // Return false if any validation errors exist
-    return emailError == null && 
-           passwordError == null && 
-           usernameError == null && 
-           birthDateError == null && 
-           userTypeError == null;
+    return emailError == null &&
+        passwordError == null &&
+        usernameError == null &&
+        birthDateError == null &&
+        userTypeError == null;
   }
 
   /// Real-time email validation
@@ -147,8 +145,9 @@ class RegisterCubit extends Cubit<RegisterState> {
   /// Real-time password validation and strength calculation
   void validatePasswordField() {
     final passwordError = _validatePassword(passwordController.text);
-    final passwordStrength = PasswordValidator.getStrength(passwordController.text);
-    
+    final passwordStrength =
+        PasswordValidator.getStrength(passwordController.text);
+
     emit(state.copyWith(
       passwordError: passwordError,
       passwordStrength: passwordStrength,
@@ -162,8 +161,6 @@ class RegisterCubit extends Cubit<RegisterState> {
       emit(state.copyWith(usernameError: usernameError));
     }
   }
-
-
 
   /// Clears field-specific errors when user starts typing
   void clearFieldError(String field) {
@@ -282,7 +279,8 @@ class RegisterCubit extends Cubit<RegisterState> {
               (failure) {
                 final authError = AuthError(
                   type: AuthErrorType.serverError,
-                  userMessage: 'Account created but profile setup failed. Please complete your profile later.',
+                  userMessage:
+                      'Account created but profile setup failed. Please complete your profile later.',
                 );
                 emit(RegisterState(
                   status: Status.registerFailed,
@@ -297,7 +295,8 @@ class RegisterCubit extends Cubit<RegisterState> {
           } catch (e) {
             final authError = AuthError(
               type: AuthErrorType.serverError,
-              userMessage: 'Account created but profile setup failed. Please complete your profile later.',
+              userMessage:
+                  'Account created but profile setup failed. Please complete your profile later.',
               technicalMessage: e.toString(),
             );
             emit(RegisterState(

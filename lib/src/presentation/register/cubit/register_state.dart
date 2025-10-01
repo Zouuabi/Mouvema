@@ -1,6 +1,12 @@
 part of 'register_cubit.dart';
 
-enum Status { initial, loading, registerSuccess, registerFailed, validationError }
+enum Status {
+  initial,
+  loading,
+  registerSuccess,
+  registerFailed,
+  validationError
+}
 
 class RegisterState extends Equatable {
   const RegisterState({
@@ -30,11 +36,11 @@ class RegisterState extends Equatable {
   bool get hasUsernameError => usernameError != null;
   bool get hasBirthDateError => birthDateError != null;
   bool get hasUserTypeError => userTypeError != null;
-  bool get hasValidationErrors => 
-      hasEmailError || 
-      hasPasswordError || 
-      hasUsernameError || 
-      hasBirthDateError || 
+  bool get hasValidationErrors =>
+      hasEmailError ||
+      hasPasswordError ||
+      hasUsernameError ||
+      hasBirthDateError ||
       hasUserTypeError;
 
   RegisterState copyWith({
@@ -52,26 +58,26 @@ class RegisterState extends Equatable {
     return RegisterState(
       status: status ?? this.status,
       errorMessage: errorMessage ?? this.errorMessage,
-      authError: clearErrors ? null : (authError ?? this.authError),
-      emailError: clearErrors ? null : (emailError ?? this.emailError),
-      passwordError: clearErrors ? null : (passwordError ?? this.passwordError),
-      usernameError: clearErrors ? null : (usernameError ?? this.usernameError),
-      birthDateError: clearErrors ? null : (birthDateError ?? this.birthDateError),
-      userTypeError: clearErrors ? null : (userTypeError ?? this.userTypeError),
+      authError: clearErrors ? null : authError ?? this.authError,
+      emailError: emailError,
+      passwordError: passwordError,
+      usernameError: usernameError,
+      birthDateError: birthDateError,
+      userTypeError: userTypeError,
       passwordStrength: passwordStrength ?? this.passwordStrength,
     );
   }
 
   @override
   List<Object?> get props => [
-    status, 
-    errorMessage, 
-    authError, 
-    emailError, 
-    passwordError, 
-    usernameError, 
-    birthDateError, 
-    userTypeError, 
-    passwordStrength
-  ];
+        status,
+        errorMessage,
+        authError,
+        emailError,
+        passwordError,
+        usernameError,
+        birthDateError,
+        userTypeError,
+        passwordStrength
+      ];
 }
