@@ -159,15 +159,15 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
             right: 20,
             left: 20,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: ColorManager.mouvemaWhite.withOpacity(0.95),
-                borderRadius: BorderRadius.circular(16),
+                color: Colors.black.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
@@ -175,13 +175,20 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
                 data[page].text1,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontFamily: 'Inter',
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: ColorManager.mouvemaBrown,
-                      height: 1.4,
-                      letterSpacing: -0.2,
+                  fontFamily: 'Inter',
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                  height: 1.3,
+                  letterSpacing: -0.3,
+                  shadows: [
+                    const Shadow(
+                      color: Colors.black54,
+                      offset: Offset(0, 1),
+                      blurRadius: 2,
                     ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -195,22 +202,27 @@ class OnBoardingScreenState extends State<OnBoardingScreen> {
                       page: data.length - 1, duration: 700);
                 },
                 style: TextButton.styleFrom(
-                  backgroundColor:
-                      ColorManager.mouvemaWhite.withValues(alpha: 0.9),
+                  backgroundColor: Colors.black.withOpacity(0.3),
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  elevation: 2,
                 ),
-                child: const Text(
-                  "Skip",
+                child: Text(
+                  "Skip to End",
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: ColorManager.mouvemaTeal,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                    shadows: [
+                      const Shadow(
+                        color: Colors.black54,
+                        offset: Offset(0, 1),
+                        blurRadius: 2,
+                      ),
+                    ],
                   ),
                 ),
               ),
